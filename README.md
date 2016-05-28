@@ -4,14 +4,36 @@
 Digital Ocean command line client
 
 Usage:
-  digitalocean-cli.py [ --debug ] [ --token=TOKEN ] create [ --image=ubuntu-16-04-x64 ] [ --region=ams3 ] [ --ssh=~/.ssh/id_rsa.pub ] [ --size=512mb ] [ --num=1 ]
-  digitalocean-cli.py [ --debug ] [ --token=TOKEN ] list
-  digitalocean-cli.py [ --debug ] [ --token=TOKEN ] power_off ( <name>... | <id>... )
-  digitalocean-cli.py [ --debug ] [ --token=TOKEN ] power_on  ( <name>... | <id>... )
-  digitalocean-cli.py [ --debug ] [ --token=TOKEN ] reboot    ( <name>... | <id>... )
-  digitalocean-cli.py [ --debug ] [ --token=TOKEN ] destroy   ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] create [--image=IMAGE] [--region=REGION]
+  [--ssh=SSH] [--size=SIZE] [--num=NUM]
+  digitalocean-cli.py [ options ] list
+  digitalocean-cli.py [ options ] power_off ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] power_on  ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] reboot    ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] destroy   ( <name>... | <id>... )
+  digitalocean-cli.py --help
 
-Make sure to set env variable TOKEN (or define your own name using --token) with you know what as a value
+Options:
+  --debug        Print debug info
+  --help         Print this message
+  --token=TOKEN  Env var to read Digital Ocean API token from [default: TOKEN]
+
+Arguments:
+  create     Create droplet
+  list       List droplets
+  power_off  Power off droplet or droplets
+  power_on   Power on droplet or droplets
+  reboot     Reboot droplet or droplets
+  destroy    Destroy droplet or droplets
+  name       Droplet name. Could be mixed with ids in the same command
+  id         Droplet id. Could be mixed with names in the same command
+
+Create command options:
+  --image=IMAGE    Image version [default: ubuntu-16-04-x64]
+  --region=REGION  Region [default: ams3]
+  --ssh=SSH        SSH key to add [default: ~/.ssh/id_rsa.pub]
+  --size=SIZE      Droplet size [default: 512mb]
+  --num=NUM        Number of droplets to create [default: 1]
 ```
 
 # Build executable
