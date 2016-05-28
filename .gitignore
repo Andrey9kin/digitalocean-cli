@@ -2,3 +2,6 @@
 env
 *.pyc
 virtualenv-*
+*.spec
+build
+dist

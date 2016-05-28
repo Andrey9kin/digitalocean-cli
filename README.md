@@ -13,3 +13,9 @@ Usage:
 
 Make sure to set env variable TOKEN (or define your own name using --token) with you know what as a value
 ```
+
+# Build executable
+
+```
+pyinstaller --onefile digitalocean-cli.py
+```
