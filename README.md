@@ -39,5 +39,15 @@ Create command options:
 # Build executable
 
 ```
+# This will prepare virtual env and pull in all necessary libs
+bash prepare_env.sh 
+
+# Activate virtual env; On Windows, it must be something like - env/Scripts/activate.exe
+source env/bin/activate
+
+# Now you are ready to go
 pyinstaller --onefile digitalocean-cli.py
+
+# Executable should be in the build dir
+dist/digitalocean-cli -h
 ```
