@@ -29,7 +29,7 @@ Droplet arguments:
   power_on   Power on droplet or droplets
   reboot     Reboot droplet or droplets
   destroy    Destroy droplet or droplets
-  name       Drolet name. Could be mixed with ids in the same command
+  name       Droplet name. Could be mixed with ids in the same command
   id         Droplet id. Could be mixed with names in the same command
 
 Create command options:
