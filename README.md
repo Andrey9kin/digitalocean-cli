@@ -4,13 +4,14 @@
 Digital Ocean command line client
 
 Usage:
-  digitalocean-cli.py [ options ] create [--image=IMAGE] [--region=REGION]
+  digitalocean-cli.py [ options ] droplet create [--image=IMAGE] [--region=REGION]
   [--ssh=SSH] [--size=SIZE] [--num=NUM]
-  digitalocean-cli.py [ options ] list
-  digitalocean-cli.py [ options ] power_off ( <name>... | <id>... )
-  digitalocean-cli.py [ options ] power_on  ( <name>... | <id>... )
-  digitalocean-cli.py [ options ] reboot    ( <name>... | <id>... )
-  digitalocean-cli.py [ options ] destroy   ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] droplet list
+  digitalocean-cli.py [ options ] droplet power_off ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] droplet power_on  ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] droplet reboot    ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] droplet destroy   ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] image   list
   digitalocean-cli.py --help
 
 Options:
@@ -18,7 +19,10 @@ Options:
   --help         Print this message
   --token=TOKEN  Env var to read Digital Ocean API token from [default: TOKEN]
 
-Arguments:
+Image arguments:
+  list       List images
+
+Droplet arguments:
   create     Create droplet
   list       List droplets
   power_off  Power off droplet or droplets

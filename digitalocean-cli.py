@@ -4,13 +4,14 @@
 Digital Ocean command line client
 
 Usage:
-  digitalocean-cli.py [ options ] create [--image=IMAGE] [--region=REGION]
+  digitalocean-cli.py [ options ] droplet create [--image=IMAGE] [--region=REGION]
   [--ssh=SSH] [--size=SIZE] [--num=NUM]
-  digitalocean-cli.py [ options ] list
-  digitalocean-cli.py [ options ] power_off ( <name>... | <id>... )
-  digitalocean-cli.py [ options ] power_on  ( <name>... | <id>... )
-  digitalocean-cli.py [ options ] reboot    ( <name>... | <id>... )
-  digitalocean-cli.py [ options ] destroy   ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] droplet list
+  digitalocean-cli.py [ options ] droplet power_off ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] droplet power_on  ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] droplet reboot    ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] droplet destroy   ( <name>... | <id>... )
+  digitalocean-cli.py [ options ] image   list
   digitalocean-cli.py --help
 
 Options:
@@ -18,14 +19,17 @@ Options:
   --help         Print this message
   --token=TOKEN  Env var to read Digital Ocean API token from [default: TOKEN]
 
-Arguments:
+Image arguments:
+  list       List images
+
+Droplet arguments:
   create     Create droplet
   list       List droplets
   power_off  Power off droplet or droplets
   power_on   Power on droplet or droplets
   reboot     Reboot droplet or droplets
   destroy    Destroy droplet or droplets
-  name       Drolet name. Could be mixed with ids in the same command
+  name       Droplet name. Could be mixed with ids in the same command
   id         Droplet id. Could be mixed with names in the same command
 
 Create command options:
@@ -95,15 +99,23 @@ def get_options(args):
 
 
 def get_command(args):
+    prefix=""
+    if args.get("droplet"):
+      prefix = "droplet"
+    elif args.get("image"):
+      prefix = "image"
+    else:
+      logging.error("Coundn't indentify command type. " +
+                "Supported - droplet, image. Args: {}".format(args))
     for key, value in args.items():
-        if (not key.startswith("--") and not key.startswith("<") and
-           value is True):
-            logging.debug("Extracted command: {}".format(key))
-            return key
+        if (not key == prefix and value is True):
+            command = "{}_{}".format(prefix, key)
+            logging.debug("Extracted command: {}".format(command))
+            return command
 
 
-def create(**kwargs):
-    logging.info("Create {} {} image(s) of size {} in region {} "
+def droplet_create(**kwargs):
+    logging.info("Create {} {} droplet(s) of size {} in region {} "
                  "with ssh key {}".format(kwargs['num'],
                                           kwargs['image'],
                                           kwargs['size'],
@@ -127,7 +139,7 @@ def create(**kwargs):
         logging.info("{} created".format(name))
 
 
-def list(**kwargs):
+def droplet_list(**kwargs):
     manager = digitalocean.Manager(token=kwargs['token'])
     logging.info("{:<20} {:<60} {:<20} {:<20}".format("id",
                                                       "name",
@@ -139,6 +151,19 @@ def list(**kwargs):
                                                           droplet.ip_address,
                                                           droplet.status))
 
+def image_list(**kwargs):
+    manager = digitalocean.Manager(token=kwargs['token'])
+    logging.info("{:<20} {:<60} {:<20} {:<20} {:<20}".format("id",
+                                                      "name",
+                                                      "size",
+                                                      "regions",
+                                                      "created_at"))
+    for image in manager.get_my_images():
+        logging.info("{:<20} {:<60} {:<20} {:<20} {:<20}".format(image.id,
+                                                          image.name,
+                                                          image.size_gigabytes,
+                                                          image.regions,
+                                                          image.created_at))
 
 def generic_droplet_command(command_name, token, name):
     ids = names_to_ids(token, name)
@@ -153,19 +178,19 @@ def generic_droplet_command(command_name, token, name):
         logging.info("Ok")
 
 
-def power_off(**kwargs):
+def droplet_power_off(**kwargs):
     generic_droplet_command("power_off", kwargs['token'], kwargs['name'])
 
 
-def power_on(**kwargs):
+def droplet_power_on(**kwargs):
     generic_droplet_command("power_on", kwargs['token'], kwargs['name'])
 
 
-def reboot(**kwargs):
+def droplet_reboot(**kwargs):
     generic_droplet_command("reboot", kwargs['token'], kwargs['name'])
 
 
-def destroy(**kwargs):
+def droplet_destroy(**kwargs):
     generic_droplet_command("destroy", kwargs['token'], kwargs['name'])
 
 
