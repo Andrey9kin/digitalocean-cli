@@ -5,7 +5,7 @@ Digital Ocean command line client
 
 Usage:
   digitalocean-cli.py [ options ] droplet create [--image=IMAGE] [--region=REGION]
-  [--ssh=SSH] [--size=SIZE] [--num=NUM]
+  [--ssh=SSH] [--size=SIZE] [--num=NUM] [--name=NAME]
   digitalocean-cli.py [ options ] droplet list
   digitalocean-cli.py [ options ] droplet power_off ( <name>... | <id>... )
   digitalocean-cli.py [ options ] droplet power_on  ( <name>... | <id>... )
@@ -38,6 +38,7 @@ Create command options:
   --ssh=SSH        SSH key to add [default: ~/.ssh/id_rsa.pub]
   --size=SIZE      Droplet size [default: 512mb]
   --num=NUM        Number of droplets to create [default: 1]
+  --name=NAME      Prefix to add to generated name [default: ]
 """
 from docopt import docopt
 import logging
@@ -128,6 +129,8 @@ def droplet_create(**kwargs):
                                     kwargs['size'],
                                     kwargs['region'],
                                     petname.Generate(2, "-"))
+        if kwargs['name'] != "":
+            name = "{}-{}".format(kwargs['name'], name)
         droplet = digitalocean.Droplet(token=kwargs['token'],
                                        number=kwargs['num'],
                                        name=name,
