@@ -109,7 +109,7 @@ def get_command(args):
       logging.error("Coundn't indentify command type. " +
                 "Supported - droplet, image. Args: {}".format(args))
     for key, value in args.items():
-        if (not key == prefix and value is True):
+        if (not key == prefix and value is True and not key.startswith("--")):
             command = "{}_{}".format(prefix, key)
             logging.debug("Extracted command: {}".format(command))
             return command
