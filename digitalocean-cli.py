@@ -12,6 +12,7 @@ Usage:
   digitalocean-cli.py [ options ] droplet reboot    ( <name>... | <id>... )
   digitalocean-cli.py [ options ] droplet destroy   ( <name>... | <id>... )
   digitalocean-cli.py [ options ] image   list
+  digitalocean-cli.py [ options ] image   destroy   ( <name>... | <id>... )
   digitalocean-cli.py --help
 
 Options:
@@ -21,6 +22,7 @@ Options:
 
 Image arguments:
   list       List images
+  destroy    Destroy image
 
 Droplet arguments:
   create     Create droplet
@@ -57,25 +59,38 @@ def read_file(path):
         raise IOError("File {} doesn't exists".format(abs_path))
 
 
-def names_to_ids(token, names):
+def names_to_ids(token, names, type):
+    logging.debug("Convert {} to id's for object type {}".format(names, type))
     manager = digitalocean.Manager(token=token)
     result = []
+    objects = []
+    if type == "droplet":
+      objects = manager.get_all_droplets()
+    elif type == "image":
+      objects = manager.get_my_images()
+    else:
+      logging.error("Internal error. Unsupported object type: {}".format(type))
     for name in names:
         if name.isdigit():
             result.append(name)
             continue
-        for droplet in manager.get_all_droplets():
-            if droplet.name == name:
+        for object in objects:
+            if object.name == name:
                 result.append(droplet.id)
                 break
         else:
-            raise IOError("Droplet {} doesn't exists".format(name))
+            raise IOError("{} {} doesn't exists".format(type, name))
     return result
 
 
-def get_droplet(token, id):
+def get_object(token, id, type):
     manager = digitalocean.Manager(token=token)
-    return manager.get_droplet(id)
+    if type == "droplet":
+        return manager.get_droplet(id)
+    elif type == "image":
+        return manager.get_image(id)
+    else:
+        logging.error("Internal error. Unsupported object type: {}".format(type))
 
 
 def get_token(args):
@@ -168,34 +183,37 @@ def image_list(**kwargs):
                                                           image.regions,
                                                           image.created_at))
 
-def generic_droplet_command(command_name, token, name):
-    ids = names_to_ids(token, name)
-    for droplet_id in ids:
-        droplet = get_droplet(token, droplet_id)
-        logging.info("{} droplet {} ({})"
+def generic_command(command_name, token, name, type):
+    ids = names_to_ids(token, name, type)
+    for id in ids:
+        object = get_object(token, id, type)
+        logging.info("{} {} {} ({})"
                      "".format(command_name.replace("_", " "),
-                               droplet.name,
-                               droplet.id))
-        command = getattr(droplet, command_name)
+                               type,
+                               object.name,
+                               object.id))
+        command = getattr(object, command_name)
         command()
         logging.info("Ok")
 
 
 def droplet_power_off(**kwargs):
-    generic_droplet_command("power_off", kwargs['token'], kwargs['name'])
+    generic_command("power_off", kwargs['token'], kwargs['name'], "droplet")
 
 
 def droplet_power_on(**kwargs):
-    generic_droplet_command("power_on", kwargs['token'], kwargs['name'])
+    generic_command("power_on", kwargs['token'], kwargs['name'], "droplet")
 
 
 def droplet_reboot(**kwargs):
-    generic_droplet_command("reboot", kwargs['token'], kwargs['name'])
+    generic_command("reboot", kwargs['token'], kwargs['name'], "droplet")
 
 
 def droplet_destroy(**kwargs):
-    generic_droplet_command("destroy", kwargs['token'], kwargs['name'])
+    generic_command("destroy", kwargs['token'], kwargs['name'], "droplet")
 
+def image_destroy(**kwargs):
+    generic_command("destroy", kwargs['token'], kwargs['name'], "image")
 
 def main():
     arguments = docopt(__doc__)
