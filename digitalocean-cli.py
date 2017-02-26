@@ -144,15 +144,15 @@ def droplet_create(**kwargs):
 
 def droplet_list(**kwargs):
     manager = digitalocean.Manager(token=kwargs['token'])
-    logging.info("{:<20} {:<60} {:<20} {:<20}".format("id",
-                                                      "name",
+    logging.info("{:<60} {:<20} {:<20} {:<20}".format("name",
+                                                      "status",
                                                       "ip",
-                                                      "status"))
+                                                      "id"))
     for droplet in manager.get_all_droplets():
-        logging.info("{:<20} {:<60} {:<20} {:<20}".format(droplet.id,
-                                                          droplet.name,
+        logging.info("{:<60} {:<20} {:<20} {:<20}".format(droplet.name,
+                                                          droplet.status,
                                                           droplet.ip_address,
-                                                          droplet.status))
+                                                          droplet.id))
 
 def image_list(**kwargs):
     manager = digitalocean.Manager(token=kwargs['token'])
